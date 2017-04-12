@@ -6,7 +6,7 @@ void Main()
 {
 	var graphs = LoadCsprojNodes(@"D:\Code\path\to\solution\root\")
 		.Where(x => !string.IsNullOrWhiteSpace(x.Id));
-	
+
 	FindDistinctCircularPaths(graphs)
 		.Select(c => string.Join(" → ", c))
 		.Dump();
@@ -17,20 +17,20 @@ IEnumerable<Node> LoadCsprojNodes(string rootPath)
 	var di = new DirectoryInfo(rootPath);
 	var projs = di.GetFiles("*.csproj", SearchOption.AllDirectories);
 	var nodes = projs.Select(f => FromCsproj(f.FullName)).Distinct().ToDictionary(n => n.Id);
-	
+
 	foreach (var node in nodes.Values.ToArray())
 	{
 		for (int i = 0; i < node.Refs.Count; i++)
 		{
 			var r = node.Refs[i];
 
-			if (nodes.TryGetValue(r.Id, out Node r2))				
+			if (nodes.TryGetValue(r.Id, out Node r2))
 				node.Refs[i] = r2;
 			else
 				nodes[r.Id] = r;
 		}
 	}
-	
+
 	return nodes.Values;
 }
 
@@ -78,7 +78,7 @@ class Node
 	{
 		return travel(new string[0], this);
 
-		IEnumerable<(bool circular, IEnumerable<string> path)> travel(IEnumerable<string> path, Node node)
+		IEnumerable<(bool, IEnumerable<string>)> travel(IEnumerable<string> path, Node node)
 		{
 			var list = new List<string>(path);
 			var circular = list.Contains(node.Id);
@@ -99,13 +99,13 @@ class Node
 		}
 	}
 
-	public override string ToString() => 
+	public override string ToString() =>
 		Id ?? "";
-		
+
 	public override bool Equals(object obj) =>
 		obj is Node node ? node.Id == Id : false;
 
-	public override int GetHashCode() => 
+	public override int GetHashCode() =>
 		ToString().GetHashCode();
 }
 
@@ -115,7 +115,7 @@ IEnumerable<IEnumerable<string>> FindDistinctCircularPaths(IEnumerable<Node> nod
 			from t in n.Travel()
 			where t.circular
 			orderby t.path.Count()
-			select t.path;
+			select ( t.path );
 
 	var list = new List<(string key, IEnumerable<string> circle)>();
 	var uniq = Guid.NewGuid().ToString();
@@ -123,12 +123,10 @@ IEnumerable<IEnumerable<string>> FindDistinctCircularPaths(IEnumerable<Node> nod
 	foreach (var circle in q)
 	{
 		var key = getKey(circle);
+
 		if (!list.Any(t => key.Contains(t.key)))
-		{
-			// new circle
 			list.Add((key, circle));
-		}
-	}
+	}	
 
 	return from t in list
 		   let c = normalize(t.circle)
@@ -141,7 +139,12 @@ IEnumerable<IEnumerable<string>> FindDistinctCircularPaths(IEnumerable<Node> nod
 	IEnumerable<T> normalize<T>(IEnumerable<T> path)
 	{
 		var l = path as IList<T> ?? new List<T>(path);
-		return circular().Skip(l.IndexOf(l.Min())).Take(l.Count);
+
+		if (l.Count < 3 || !l.First().Equals(l.Last()))
+			return l;
+
+		var skip = l.IndexOf(l.Min());
+		return circular().Skip(skip).Take(l.Count);
 
 		IEnumerable<T> circular()
 		{
