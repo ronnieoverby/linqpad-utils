@@ -2,7 +2,7 @@
 
 void Main()
 {
-	var graphs = LoadCsprojNodes(@"D:\Code\mideo")
+	var graphs = LoadCsprojNodes(@"D:\Code\path\to\solution\root\")
 		.Where(x => !string.IsNullOrWhiteSpace(x.Id));
 	
 	FindDistinctCircularPaths(graphs)
