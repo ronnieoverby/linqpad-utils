@@ -1,8 +1,4 @@
-<Query Kind="Program">
-  <NuGetReference>Overby.Extensions.Attachments</NuGetReference>
-  <Namespace>Overby.Extensions.Attachments</Namespace>
-  <Namespace>System.Runtime.CompilerServices</Namespace>
-</Query>
+<Query Kind="Program" />
 
 void Main()
 {
