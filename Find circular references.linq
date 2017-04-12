@@ -115,7 +115,7 @@ IEnumerable<IEnumerable<string>> FindDistinctCircularPaths(IEnumerable<Node> nod
 			from t in n.Travel()
 			where t.circular
 			orderby t.path.Count()
-			select ( t.path );
+			select t.path;
 
 	var list = new List<(string key, IEnumerable<string> circle)>();
 	var uniq = Guid.NewGuid().ToString();
