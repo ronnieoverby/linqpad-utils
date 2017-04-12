@@ -1,5 +1,7 @@
 <Query Kind="Program" />
 
+// linqpad version must support c# 7+
+
 void Main()
 {
 	var graphs = LoadCsprojNodes(@"D:\Code\path\to\solution\root\")
