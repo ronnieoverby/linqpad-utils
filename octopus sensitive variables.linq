@@ -12,8 +12,7 @@ void Main()
 	// to find master key, use powershell on your octopus server:
 	//       & 'C:\Program Files\Octopus Deploy\Octopus\Octopus.Server.exe' show-master-key
 	// if you don't have access to the server, you have no business looking at the variables
-	var csb = new SqlConnectionStringBuilder(Connection.ConnectionString);
-	var pwkey = $"octopus master key @{csb.DataSource}/{csb.InitialCatalog}";
+	var pwkey = $"octopus master key {Connection.ConnectionString.GetHashCode()}";
 	var masterKey = Convert.FromBase64String(Util.GetPassword(pwkey));
 
 	var projects = Projects.ToArray();
