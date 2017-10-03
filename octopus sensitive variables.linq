@@ -1,17 +1,20 @@
 <Query Kind="Program">
   <NuGetReference>Newtonsoft.Json</NuGetReference>
-  <Namespace>System.Security.Cryptography</Namespace>
   <Namespace>Newtonsoft.Json.Linq</Namespace>
+  <Namespace>System.Security.Cryptography</Namespace>
 </Query>
 
 void Main()
 {
-	// first connect this query to your octopus database
-	
+	// first connect this query to your octopus database	
+
 	// next, paste your master key here.
-	// to find master key, using powershell on your octopus server:
-	// & 'C:\Program Files\Octopus Deploy\Octopus\Octopus.Server.exe' show-master-key
-	var masterKey = Convert.FromBase64String("your/master/key==");
+	// to find master key, use powershell on your octopus server:
+	//       & 'C:\Program Files\Octopus Deploy\Octopus\Octopus.Server.exe' show-master-key
+	// if you don't have access to the server, you have no business looking at the variables
+	var csb = new SqlConnectionStringBuilder(Connection.ConnectionString);
+	var pwkey = $"octomkey@{csb.DataSource}/{csb.InitialCatalog}";
+	var masterKey = Convert.FromBase64String(Util.GetPassword(pwkey));
 
 	var projects = Projects.ToArray();
 	var projName = Util.ReadLine("Project? (Arrow up/down for suggestions)", projects[0].Name, projects.Select(x => x.Name));
@@ -19,7 +22,6 @@ void Main()
 	var releases = Releases.Where(x => x.ProjectId == project.Id).ToArray();
 	var versions = releases.OrderByDescending(x => Version.Parse(x.Version)).Select(x => x.Version).ToArray();
 	var version = Util.ReadLine("Release? (Arrow up/down for suggestions)", versions[0], versions);
-
 	var release = releases.Single(x => x.Version == version);
 	var vset = VariableSets.Single(x => x.Id == release.ProjectVariableSetSnapshotId);
 
