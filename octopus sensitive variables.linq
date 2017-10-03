@@ -8,8 +8,8 @@
 
 // run the script and you'll be prompted for the master key
 // to find master key, use powershell on your octopus server:
-//       & 'C:\Program Files\Octopus Deploy\Octopus\Octopus.Server.exe' show-master-key
-// if you don't have access to the server, you have no business looking at the variables
+// PS C:\Windows\system32> & 'C:\Program Files\Octopus Deploy\Octopus\Octopus.Server.exe' show-master-key
+// if you cant't get your master key then you have no business looking at the variables
 
 void Main()
 {
@@ -31,14 +31,14 @@ void Main()
 			 select new
 			 {
 				 name = (string)v["Name"],
-				 value = ToPlaintext(value, masterKey),
+				 value = DecodeSensitiveVariable(value, masterKey),
 				 scope = v["Scope"].ToString()
 			 };
 
 	jq.ToArray().Dump($"Sensitive Variables ({project.Name} v{version})");
 }
 
-string ToPlaintext(string encodedValue, byte[] key)
+string DecodeSensitiveVariable(string encodedValue, byte[] key)
 {
 	var parts = encodedValue.Split('|');
 	var cipher = Convert.FromBase64String(parts[0]);
@@ -61,6 +61,5 @@ string ToPlaintext(string encodedValue, byte[] key)
 		cryptoStream.FlushFinalBlock();
 		var s = Encoding.UTF8.GetString(memoryStream.ToArray());
 		return s;
-
 	}
 }
