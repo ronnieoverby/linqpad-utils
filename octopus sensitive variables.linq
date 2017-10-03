@@ -8,12 +8,12 @@ void Main()
 {
 	// first connect this query to your octopus database	
 
-	// next, paste your master key here.
+	// run the script and you'll be prompted for the master key
 	// to find master key, use powershell on your octopus server:
 	//       & 'C:\Program Files\Octopus Deploy\Octopus\Octopus.Server.exe' show-master-key
 	// if you don't have access to the server, you have no business looking at the variables
 	var csb = new SqlConnectionStringBuilder(Connection.ConnectionString);
-	var pwkey = $"octomkey@{csb.DataSource}/{csb.InitialCatalog}";
+	var pwkey = $"octopus master key @{csb.DataSource}/{csb.InitialCatalog}";
 	var masterKey = Convert.FromBase64String(Util.GetPassword(pwkey));
 
 	var projects = Projects.ToArray();
