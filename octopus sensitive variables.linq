@@ -9,7 +9,7 @@
 // run the script and you'll be prompted for the master key
 // to find master key, use powershell on your octopus server:
 // PS C:\Windows\system32> & 'C:\Program Files\Octopus Deploy\Octopus\Octopus.Server.exe' show-master-key
-// if you cant't get your master key then you have no business looking at the variables
+// if you can't get your master key then you have no business looking at the variables
 
 void Main()
 {
